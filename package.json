@@ -1,0 +1,40 @@
+{
+  "name": "nutricalcapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AntonioYurquina/NutriCalcApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AntonioYurquina/NutriCalcApp/issues"
+  },
+  "homepage": "https://AntonioYurquina.github.io/NutriCalcApp/",
+  "dependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "axios": "^1.15.0",
+    "lucide-react": "^1.8.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "recharts": "^3.8.1",
+    "vite": "^8.0.8"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "gh-pages": "^6.3.0",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^3.4.19"
+  }
+}
