@@ -1,92 +1,95 @@
-import React, { useState } from 'react'
-import { Minus, Plus, Trash2 } from 'lucide-react'
+import React from 'react'
+import { Trash2 } from 'lucide-react'
 import { useNutrition } from '../hooks/useNutrition'
+import { useToast } from '../hooks/useToast'
+import QuantityStepper from './QuantityStepper'
+import {
+  MACROS,
+  formatDecimal,
+  formatInt,
+  formatQuantity,
+  getBasisLabel,
+  getFoodNutrients,
+} from '../utils/helpers'
 
 /**
- * Tarjeta de comida consumida
+ * Fila de un alimento registrado: cantidad editable, aporte y botón para quitar
  */
-export const FoodCard = ({ food }) => {
-  const { removeFood, updateFood } = useNutrition()
-  const [quantity, setQuantity] = useState(food.quantity || 1)
+export const FoodCard = ({ food, isNew = false }) => {
+  const { removeFood, restoreFoods, updateFood, darkMode } = useNutrition()
+  const { showToast } = useToast()
+  const nutrients = getFoodNutrients(food)
 
-  const handleQuantityChange = (newQuantity) => {
-    if (newQuantity > 0) {
-      setQuantity(newQuantity)
-      updateFood(food.id, { quantity: newQuantity })
-    }
+  const handleRemove = () => {
+    const removed = removeFood(food.id)
+    if (!removed) return
+    showToast({
+      message: `Quitaste ${food.name}`,
+      actionLabel: 'Deshacer',
+      onAction: () => restoreFoods([removed]),
+    })
   }
 
-  const multiplier = food.unit === 'g' ? quantity / 100 : quantity
-
   return (
-    <div className="glass-effect p-4 rounded-lg hover:shadow-lg transition-all">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-            {food.name}
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {quantity}{food.unit}
-          </p>
-        </div>
-        <button
-          onClick={() => removeFood(food.id)}
-          className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors"
-          aria-label="Eliminar alimento"
-        >
-          <Trash2 size={18} />
-        </button>
+    <li
+      className={`card row-enter grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_auto_5.5rem_auto] ${
+        isNew ? 'row-flash border-health-600 dark:border-health-500' : ''
+      }`}
+    >
+      <div className="min-w-0">
+        <h3 className="truncate font-semibold text-slate-900 dark:text-white">{food.name}</h3>
+        <p className="text-sm text-muted">
+          {formatInt(food.calories)} kcal {getBasisLabel(food)}
+        </p>
       </div>
 
-      {/* Controles de cantidad */}
-      <div className="flex items-center space-x-2 mb-4 bg-gray-100 dark:bg-gray-700 rounded-lg p-2">
-        <button
-          onClick={() => handleQuantityChange(quantity - 1)}
-          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
-          aria-label="Disminuir cantidad"
-        >
-          <Minus size={16} />
-        </button>
-        <input
-          type="number"
-          value={quantity}
-          onChange={(e) => {
-            const val = parseFloat(e.target.value)
-            if (!isNaN(val)) handleQuantityChange(val)
-          }}
-          className="flex-1 text-center bg-transparent font-semibold dark:text-white"
-          min="0.1"
-          step="0.1"
+      <div className="col-start-1 row-start-2 md:col-start-2 md:row-start-1">
+        <QuantityStepper
+          name={food.name}
+          unit={food.unit}
+          value={food.quantity}
+          onChange={(quantity) => updateFood(food.id, { quantity })}
         />
-        <button
-          onClick={() => handleQuantityChange(quantity + 1)}
-          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
-          aria-label="Aumentar cantidad"
-        >
-          <Plus size={16} />
-        </button>
       </div>
 
-      {/* Información nutricional */}
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        <div className="bg-white dark:bg-gray-800 p-2 rounded">
-          <p className="text-gray-600 dark:text-gray-400 text-xs">Calorías</p>
-          <p className="font-bold text-health-600">{Math.round(food.calories * multiplier)}</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-2 rounded">
-          <p className="text-gray-600 dark:text-gray-400 text-xs">Proteína</p>
-          <p className="font-bold text-blue-600">{(food.proteins * multiplier).toFixed(1)}g</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-2 rounded">
-          <p className="text-gray-600 dark:text-gray-400 text-xs">Carbs</p>
-          <p className="font-bold text-orange-600">{(food.carbs * multiplier).toFixed(1)}g</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-2 rounded">
-          <p className="text-gray-600 dark:text-gray-400 text-xs">Grasas</p>
-          <p className="font-bold text-yellow-600">{(food.fats * multiplier).toFixed(1)}g</p>
-        </div>
-      </div>
-    </div>
+      <p
+        className="col-start-2 row-start-2 text-right md:col-start-3 md:row-start-1"
+        aria-label={`${formatInt(nutrients.calories)} kilocalorías por ${formatQuantity(food)}`}
+      >
+        <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          {formatInt(nutrients.calories)}
+        </span>{' '}
+        <span className="text-sm text-muted">kcal</span>
+      </p>
+
+      <button
+        type="button"
+        onClick={handleRemove}
+        aria-label={`Quitar ${food.name}`}
+        title="Quitar"
+        className="col-start-2 row-start-1 -mr-1.5 flex h-11 w-11 justify-self-end items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-red-50 hover:text-red-700 md:col-start-4 md:mr-0 md:h-10 md:w-10 dark:text-slate-400 dark:hover:bg-red-950/50 dark:hover:text-red-300"
+      >
+        <Trash2 size={18} aria-hidden="true" />
+      </button>
+
+      <dl className="col-span-2 grid grid-cols-3 gap-2 border-t border-slate-100 pt-3 md:row-start-2 md:col-span-4 dark:border-slate-800">
+        {MACROS.map((macro) => (
+          <div key={macro.key} className="min-w-0">
+            <dt className="flex items-center gap-1.5 text-xs text-muted">
+              <span
+                aria-hidden="true"
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ backgroundColor: macro.colors[darkMode ? 'dark' : 'light'] }}
+              />
+              <span className="truncate">{macro.label}</span>
+            </dt>
+            <dd className="mt-0.5 text-sm font-semibold tabular-nums text-slate-800 dark:text-slate-200">
+              {formatDecimal(nutrients[macro.key])} g
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </li>
   )
 }
 

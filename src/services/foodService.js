@@ -906,6 +906,9 @@ const MOCK_FOODS = [
   }
 ]
 
+const normalizeText = (text) =>
+  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
 /**
  * Buscar alimentos en la API USDA
  * @param {string} query - Término de búsqueda
@@ -919,10 +922,13 @@ export const searchFoods = async (query) => {
   try {
     // Retornar resultados mock para demostración
     // En producción, usar: const response = await axios.get(...)
-    const results = MOCK_FOODS.filter(food =>
-      food.name.toLowerCase().includes(query.toLowerCase())
+    const term = normalizeText(query.trim())
+    const matches = MOCK_FOODS.filter(food =>
+      normalizeText(food.name).includes(term)
     )
-    
+    const startsWithTerm = (food) => (normalizeText(food.name).startsWith(term) ? 0 : 1)
+    const results = [...matches].sort((a, b) => startsWithTerm(a) - startsWithTerm(b))
+
     return results.map(food => ({
       ...food,
       label: `${food.name} (${food.portion}${food.unit})`
@@ -964,8 +970,30 @@ export const getAutocompleteSuggestions = async (query) => {
   return searchFoods(query)
 }
 
+/**
+ * Día de ejemplo para probar la app con un clic
+ * @returns {Array<{food: Object, quantity: number}>}
+ */
+export const getSampleDay = () => {
+  const sample = [
+    ['Pollo sin piel', 150],
+    ['Arroz blanco cocido', 200],
+    ['Brócoli crudo', 100],
+    ['Huevo cocido', 2],
+    ['Manzana mediana', 1]
+  ]
+
+  return sample
+    .map(([name, quantity]) => ({
+      food: MOCK_FOODS.find((f) => f.name === name),
+      quantity
+    }))
+    .filter((item) => item.food)
+}
+
 export default {
   searchFoods,
   getFoodDetails,
-  getAutocompleteSuggestions
+  getAutocompleteSuggestions,
+  getSampleDay
 }
