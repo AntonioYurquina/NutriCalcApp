@@ -22,7 +22,8 @@ Una aplicación web moderna y responsiva para nutricionistas y personas que dese
 - **Grasas**: Desglose detallado de grasas consumidas
 
 ### 📈 Resumen diario interactivo
-- Gráfico de pizza con distribución de macronutrientes
+- Anillo con el total de calorías y barras por macronutriente, con su aporte a la energía del día
+- Resumen siempre visible: fijo junto a la lista en escritorio y en una barra inferior en el móvil
 - Vista clara del total consumido vs. meta diaria
 - Calorías restantes para alcanzar tu objetivo
 - Tarjetas con información de cada macronutriente
@@ -50,7 +51,7 @@ Una aplicación web moderna y responsiva para nutricionistas y personas que dese
 
 ## 🚀 Tecnologías utilizadas
 
-- **React 18** - Framework de UI con Virtual DOM
+- **React 19** - Framework de UI con Virtual DOM
 - **Vite** - Herramienta de construcción rápida
 - **Tailwind CSS** - Framework de estilos utilitarios
 - **Recharts** - Biblioteca de gráficos
@@ -195,10 +196,10 @@ health: {
 
 ## 📦 Dependencias principales
 
-- `react` ^18.2.0 - Framework
-- `vite` ^5.0.0 - Build tool
-- `tailwindcss` ^3.3.0 - Estilos
-- `recharts` ^2.10.0 - Gráficos
+- `react` ^19.2.5 - Framework
+- `vite` ^8.0.8 - Build tool
+- `tailwindcss` ^3.4.19 - Estilos
+- `recharts` ^3.8.1 - Gráficos
 - `lucide-react` ^1.8.0 - Iconos
 - `axios` ^1.15.0 - HTTP client
 
