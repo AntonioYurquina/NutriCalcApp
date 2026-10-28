@@ -49,13 +49,25 @@ function AppContent() {
         </div>
       </main>
 
-      <footer className="border-t border-slate-200 py-6 dark:border-slate-800">
-        <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      {/* En móvil deja lugar abajo para que la barra fija de totales no tape el pie */}
+      <footer className="border-t border-slate-200 pb-24 pt-6 dark:border-slate-800 lg:pb-6">
+        <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 text-sm text-muted sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
           <p>
             <span className="font-semibold text-slate-800 dark:text-slate-200">NutriCalc</span>
             {' · '}Calculadora de calorías y macros
           </p>
           <p>Tus datos se guardan solo en este navegador. Los valores son aproximados.</p>
+          <p className="mt-1 text-xs sm:basis-full">
+            Desarrollado por{' '}
+            <a
+              href="https://arkode.com.ar"
+              target="_blank"
+              rel="noopener"
+              className="font-semibold text-slate-800 underline underline-offset-2 hover:text-health-700 dark:text-slate-200 dark:hover:text-health-400"
+            >
+              Arkode
+            </a>
+          </p>
         </div>
       </footer>
 
